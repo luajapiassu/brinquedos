@@ -25,7 +25,7 @@ public class Brinquedo {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ds_tipo", nullable = false, length = 40)
-    private Tipobrinquedo tipo;
+    private TipoBrinquedo tipo;
 
     @Column(name = "ds_classificacao", nullable = false, length = 20)
     private String classificacao;

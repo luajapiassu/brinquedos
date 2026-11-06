@@ -36,8 +36,8 @@ public class BrinquedoService {
     public String deletar(Long id) {
         if (repository.existsById(id)){
             repository.deleteById(id);
-            return "Brinquedo deletado com sucesso !";
+            return "Brinquedo deletado com sucesso!";
         }
-        return "Brinquedo nao encontrado.";
+        return "Brinquedo não encontrado.";
     }
 }

@@ -17,7 +17,7 @@ public class BrinquedoController {
     @Autowired
     private BrinquedoService service;
 
-    @GetMapping("/geral")
+    @GetMapping
     public List<Brinquedo> listarBrinquedos(){
         return service.listarTodos();
     }
