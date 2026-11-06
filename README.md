@@ -11,19 +11,6 @@ Aplicação Spring Boot (Maven, Java) para uma empresa de brinquedos esportivos 
 
 O Postman envia a requisição para o `BrinquedoController`, que chama o `BrinquedoService`. O Service usa o `BrinquedoRepository` para gravar e buscar os dados no banco H2.
 
-## Diagrama
-
-```mermaid
-flowchart LR
-    P[Postman / Navegador] -->|HTTP localhost:8080| SEC[SegurancaConfig<br/>Spring Security]
-    SEC --> C[BrinquedoController<br/>API REST]
-    SEC --> PG[PaginaController<br/>Thymeleaf]
-    C --> S[BrinquedoService]
-    PG --> S
-    S --> R[BrinquedoRepository<br/>JpaRepository]
-    R --> DB[(H2<br/>TDS_TB_BRINQUEDOS)]
-```
-
 ## Repository
 
 ```java
@@ -103,6 +90,32 @@ Exclui o brinquedo do banco pelo id. Retorna `200` com `"Brinquedo deletado com 
 
 ![DELETE de id inexistente](docs/prints/06-delete-inexistente-404.jpeg)
 
+## Validações (Bean Validation)
+
+Os atributos do `Brinquedo` usam anotações do Jakarta Bean Validation, e o `BrinquedoController` usa `@Valid` no POST e no PUT. Se algum dado for inválido, a API responde `400 Bad Request` com a mensagem do erro e o brinquedo não é salvo.
+
+| Atributo | Validação | Mensagem |
+|---|---|---|
+| `nome` | `@NotBlank`, `@Size(max = 50)` | O nome é obrigatório |
+| `tipo` | `@NotNull` | O tipo é obrigatório |
+| `classificacao` | `@NotBlank`, `@Size(max = 20)` | A classificação é obrigatória |
+| `tamanho` | `@NotBlank`, `@Size(max = 20)` | O tamanho é obrigatório |
+| `preco` | `@NotNull`, `@Positive` | O preço deve ser maior que zero |
+
+Exemplo: POST `/brinquedos/criar` (como `admin`) com nome vazio e preço negativo:
+
+```json
+{
+    "nome": "",
+    "tipo": "BOLA",
+    "classificacao": "5+ anos",
+    "tamanho": "N3",
+    "preco": -5
+}
+```
+
+Resposta `400 Bad Request`, com os erros `nome: O nome é obrigatório` e `preco: O preço deve ser maior que zero`.
+
 ## Spring Security
 
 Classe `SegurancaConfig`. A API (`/brinquedos/**`) usa HTTP Basic, para testar no Postman, e o site usa a tela de login (`/login`). Existem dois perfis, criados em memória, com senha em BCrypt:
@@ -154,12 +167,12 @@ Importar `postman/AC4-Brinquedos.postman_collection.json` e rodar a coleção. C
 
 ![GET com senha errada](docs/prints/01-get-senha-errada-401.jpeg)
 
-### Prints Spring Initializr
+## Prints Spring Initializr
 <img width="402" height="370" alt="Screenshot 2026-11-05 at 19 46 01" src="https://github.com/user-attachments/assets/3fe6c09a-1f1c-47d6-b75e-52a2600cea3e" />
 <img width="402" height="370" alt="Screenshot 2026-11-05 at 19 44 29" src="https://github.com/user-attachments/assets/138950c1-3d5e-4537-bfa7-93883dcf1d42" />
 
 
-## Testes de segurança (Postman)
+## Prints dos testes de segurança
 
 Os testes de segurança usam HTTP Basic com os usuários `user` (perfil USER) e `admin` (perfil ADMIN). Sem login a API responde 401, e com login sem permissão responde 403.
 
@@ -204,7 +217,7 @@ Os testes de segurança usam HTTP Basic com os usuários `user` (perfil USER) e 
 ![Painel user](docs/prints/17-site-painel-user.jpg)
 
 
-  ## Diagramas
+## Diagramas
 
 ### Arquitetura em camadas
 
