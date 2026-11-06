@@ -55,5 +55,7 @@ Atualiza os dados do brinquedo de id 1.
 
 Exclui o brinquedo do banco pelo id. Retorna `200` com `"Brinquedo deletado com sucesso!"`, ou `404` com `"Brinquedo não encontrado."` se o id não existir.
 
+### Prints Spring Initializr
+<img width="804" height="735" alt="Screenshot 2026-11-05 at 19 46 01" src="https://github.com/user-attachments/assets/3fe6c09a-1f1c-47d6-b75e-52a2600cea3e" />
 
   
