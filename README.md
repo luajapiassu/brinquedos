@@ -158,4 +158,46 @@ Importar `postman/AC4-Brinquedos.postman_collection.json` e rodar a coleção. C
 <img width="402" height="370" alt="Screenshot 2026-11-05 at 19 46 01" src="https://github.com/user-attachments/assets/3fe6c09a-1f1c-47d6-b75e-52a2600cea3e" />
 <img width="402" height="370" alt="Screenshot 2026-11-05 at 19 44 29" src="https://github.com/user-attachments/assets/138950c1-3d5e-4537-bfa7-93883dcf1d42" />
 
+
+## Testes de segurança (Postman)
+
+Os testes de segurança usam HTTP Basic com os usuários `user` (perfil USER) e `admin` (perfil ADMIN). Sem login a API responde 401, e com login sem permissão responde 403.
+
+**Sem login: 401**
+
+![GET sem login 401](docs/prints/07-get-sem-login-401.jpg)
+
+**Usuário USER consegue consultar: 200**
+
+![GET como USER 200](docs/prints/08-get-user-200.jpg)
+
+**Usuário USER não consegue criar, atualizar nem excluir: 403**
+
+![POST como USER 403](docs/prints/09-post-user-403.jpg)
+
+![PUT como USER 403](docs/prints/10-put-user-403.jpg)
+
+![DELETE como USER 403](docs/prints/11-delete-user-403.jpg)
+
+**Usuário ADMIN consegue excluir: 200**
+
+![DELETE como ADMIN 200](docs/prints/12-delete-admin-200.jpg)
+
+## Telas do site (Thymeleaf)
+
+**Página inicial (pública)**
+
+![Landing](docs/prints/14-site-landing.jpg)
+
+**Login**
+
+![Login](docs/prints/15-site-login.jpg)
+
+**Painel como ADMIN:** o formulário de cadastro e o botão Excluir aparecem.
+
+![Painel admin](docs/prints/16-site-painel-admin.jpg)
+
+**Painel como USER:** só a lista de brinquedos, sem formulário e sem botão Excluir (`sec:authorize`).
+
+![Painel user](docs/prints/17-site-painel-user.jpg)
   
