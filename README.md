@@ -183,6 +183,8 @@ Os testes de segurança usam HTTP Basic com os usuários `user` (perfil USER) e 
 
 ![DELETE como ADMIN 200](docs/prints/12-delete-admin-200.jpg)
 
+![Run da collection](docs/prints/13-run-collection.jpg)
+
 ## Telas do site (Thymeleaf)
 
 **Página inicial (pública)**
