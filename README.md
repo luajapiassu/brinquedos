@@ -200,4 +200,44 @@ Os testes de segurança usam HTTP Basic com os usuários `user` (perfil USER) e 
 **Painel como USER:** só a lista de brinquedos, sem formulário e sem botão Excluir (`sec:authorize`).
 
 ![Painel user](docs/prints/17-site-painel-user.jpg)
-  
+
+
+  ## Diagramas
+
+### Arquitetura em camadas
+
+```mermaid
+flowchart LR
+    C[Cliente: Postman ou navegador] --> S[Spring Security]
+    S --> RC[BrinquedoController - REST]
+    S --> PC[PaginaController - Thymeleaf]
+    RC --> SV[BrinquedoService]
+    PC --> SV
+    SV --> R[BrinquedoRepository]
+    R --> DB[(H2 - TDS_TB_BRINQUEDOS)]
+```
+
+### Fluxo de autenticação e autorização
+
+```mermaid
+flowchart TD
+    A[Requisição] --> B{Autenticado?}
+    B -- Não --> C[401 ou redirect para /login]
+    B -- Sim --> D{Rota exige ADMIN?}
+    D -- Não --> E[Acesso liberado]
+    D -- Sim --> F{Perfil ADMIN?}
+    F -- Sim --> E
+    F -- Não --> G[403 Forbidden]
+```
+
+### Permissões por perfil
+
+```mermaid
+flowchart LR
+    U[USER] -->|GET| L[Consultar brinquedos]
+    A[ADMIN] -->|GET| L
+    A -->|POST| Cr[Criar]
+    A -->|PUT| At[Atualizar]
+    A -->|DELETE| Ex[Excluir]
+```
+
