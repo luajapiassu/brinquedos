@@ -11,16 +11,6 @@ Aplicação Spring Boot (Maven, Java) para uma empresa de brinquedos esportivos 
 
 O Postman envia a requisição para o `BrinquedoController`, que chama o `BrinquedoService`. O Service usa o `BrinquedoRepository` para gravar e buscar os dados no banco H2.
 
-## Diagrama
-
-```mermaid
-flowchart LR
-    P[Postman<br/>JSON] -->|HTTP localhost:8080| C[BrinquedoController]
-    C --> S[BrinquedoService]
-    S --> R[BrinquedoRepository<br/>JpaRepository]
-    R --> DB[(H2<br/>TDS_TB_BRINQUEDOS)]
-```
-
 ## Repository
 
 ```java
