@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Brinquedos Esportivos</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <span class="logo">Brinquedos Esportivos</span>
+    <nav><a th:href="@{/}">Inicio</a></nav>
+</header>
+
+<div class="box login-box">
+    <h2>Entrar</h2>
+
+    <div class="alerta" th:if="${param.error}">Usuario ou senha invalidos.</div>
+    <div class="sucesso" th:if="${param.logout}">Logout realizado com sucesso.</div>
+
+    <form th:action="@{/login}" method="post">
+        <label for="username">Usuario</label>
+        <input type="text" id="username" name="username" required autofocus>
+
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" required>
+
+        <p><button class="btn" type="submit">Entrar</button></p>
+    </form>
+
+    <p class="dica">Teste: user / user123 (USER) &middot; admin / admin123 (ADMIN)</p>
+</div>
+</body>
+</html>

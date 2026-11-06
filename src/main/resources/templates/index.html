@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Brinquedos Esportivos</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <span class="logo">Brinquedos Esportivos</span>
+    <nav>
+        <a th:href="@{/}">Inicio</a>
+        <span sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}">Entrar</a>
+        </span>
+        <span sec:authorize="isAuthenticated()">
+            <a th:href="@{/painel}">Painel</a>
+        </span>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Diversao em movimento!</h1>
+    <p>Brinquedos esportivos para criancas de ate 15 anos.</p>
+    <p th:if="${param.logout}">Voce saiu da sua conta.</p>
+    <a class="btn" th:href="@{/login}" sec:authorize="!isAuthenticated()">Acessar o sistema</a>
+    <a class="btn" th:href="@{/painel}" sec:authorize="isAuthenticated()">Ir para o painel</a>
+</section>
+
+<div class="container">
+    <div class="cards">
+        <div class="card"><h3>Bolas e raquetes</h3><p>Futebol, volei, basquete e muito mais.</p></div>
+        <div class="card"><h3>Seguranca</h3><p>Produtos classificados por faixa etaria.</p></div>
+        <div class="card"><h3>Para todos os tamanhos</h3><p>Opcoes de tamanho infantil e juvenil.</p></div>
+    </div>
+</div>
+</body>
+</html>

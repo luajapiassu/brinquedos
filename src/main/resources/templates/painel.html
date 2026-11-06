@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel - Brinquedos Esportivos</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header>
+    <span class="logo">Brinquedos Esportivos</span>
+    <nav>
+        <span>Ola, <b sec:authentication="name">usuario</b></span>
+        <a th:href="@{/}">Inicio</a>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button type="submit">Sair</button>
+        </form>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="sucesso" th:if="${mensagem}" th:text="${mensagem}"></div>
+
+    <div class="box" sec:authorize="hasRole('ADMIN')">
+        <h2>Cadastrar brinquedo</h2>
+        <form th:action="@{/painel/admin/brinquedos}" th:object="${brinquedo}" method="post">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" th:field="*{nome}" maxlength="50" required>
+
+            <label for="tipo">Tipo</label>
+            <select id="tipo" th:field="*{tipo}" required>
+                <option th:each="t : ${tipos}" th:value="${t}" th:text="${t}">BOLA</option>
+            </select>
+
+            <label for="classificacao">Classificacao</label>
+            <input type="text" id="classificacao" th:field="*{classificacao}" maxlength="20" required>
+
+            <label for="tamanho">Tamanho</label>
+            <input type="text" id="tamanho" th:field="*{tamanho}" maxlength="20" required>
+
+            <label for="preco">Preco (R$)</label>
+            <input type="number" step="0.01" min="0.01" id="preco" th:field="*{preco}" required>
+
+            <p><button class="btn" type="submit">Salvar</button></p>
+        </form>
+    </div>
+
+    <div class="box">
+        <h2>Brinquedos cadastrados</h2>
+        <p th:if="${#lists.isEmpty(brinquedos)}">Nenhum brinquedo cadastrado ainda.</p>
+        <table th:unless="${#lists.isEmpty(brinquedos)}">
+            <thead>
+            <tr>
+                <th>Id</th><th>Nome</th><th>Tipo</th><th>Classificacao</th><th>Tamanho</th><th>Preco</th>
+                <th sec:authorize="hasRole('ADMIN')">Acoes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${brinquedos}">
+                <td th:text="${b.id}">1</td>
+                <td th:text="${b.nome}">Bola</td>
+                <td th:text="${b.tipo}">BOLA</td>
+                <td th:text="${b.classificacao}">5+</td>
+                <td th:text="${b.tamanho}">M</td>
+                <td th:text="${#numbers.formatDecimal(b.preco, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+                <td sec:authorize="hasRole('ADMIN')">
+                    <form th:action="@{/painel/admin/brinquedos/{id}/excluir(id=${b.id})}" method="post">
+                        <button class="btn-del" type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

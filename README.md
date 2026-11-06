@@ -11,6 +11,19 @@ Aplicação Spring Boot (Maven, Java) para uma empresa de brinquedos esportivos 
 
 O Postman envia a requisição para o `BrinquedoController`, que chama o `BrinquedoService`. O Service usa o `BrinquedoRepository` para gravar e buscar os dados no banco H2.
 
+## Diagrama
+
+```mermaid
+flowchart LR
+    P[Postman / Navegador] -->|HTTP localhost:8080| SEC[SegurancaConfig<br/>Spring Security]
+    SEC --> C[BrinquedoController<br/>API REST]
+    SEC --> PG[PaginaController<br/>Thymeleaf]
+    C --> S[BrinquedoService]
+    PG --> S
+    S --> R[BrinquedoRepository<br/>JpaRepository]
+    R --> DB[(H2<br/>TDS_TB_BRINQUEDOS)]
+```
+
 ## Repository
 
 ```java
@@ -18,6 +31,13 @@ O Postman envia a requisição para o `BrinquedoController`, que chama o `Brinqu
 public interface BrinquedoRepository extends JpaRepository<Brinquedo, Long> {
 }
 ```
+
+O `BrinquedoRepository` é uma interface que estende `JpaRepository<T, K>`, onde:
+
+- **`T = Brinquedo`**: a entidade (tabela) que o repositório gerencia;
+- **`K = Long`**: o tipo da chave primária (`id`).
+
+Não é preciso escrever métodos nem SQL: o Spring Data JPA cria a implementação automaticamente e ela é injetada no `BrinquedoService` com `@Autowired`. A anotação `@Repository` marca a classe como camada de acesso a dados.
 
 Métodos do `JpaRepository` usados no projeto:
 
@@ -37,24 +57,102 @@ Base: `http://localhost:8080/brinquedos`
 
 Cadastra um brinquedo. O `id` é gerado automaticamente.
 
+```json
+{
+    "nome": "Bola de Futebol",
+    "tipo": "BOLA",
+    "classificacao": "5+ anos",
+    "tamanho": "N3",
+    "preco": 59.9
+}
+```
+
+![POST criar como admin](docs/prints/02-post-criar-admin-200.jpeg)
+
 ### Read: GET `/brinquedos`
 
 Lista todos os brinquedos cadastrados.
+
+![GET listar como admin](docs/prints/03-get-listar-admin-200.jpeg)
 
 ### Read: GET `/brinquedos/individual/1`
 
 Busca o brinquedo pelo id.
 
+![GET individual como admin](docs/prints/04-get-individual-admin-200.jpeg)
 
 ### Update: PUT `/brinquedos/atualizacao/1`
 
 Atualiza os dados do brinquedo de id 1.
 
+```json
+{
+    "nome": "Bola de Futebol Pro",
+    "tipo": "BOLA",
+    "classificacao": "8+ anos",
+    "tamanho": "N5",
+    "preco": 89.9
+}
+```
+
+![PUT atualizar como admin](docs/prints/05-put-atualizar-admin-200.jpeg)
 
 ### Delete: DELETE `/brinquedos/deletar/1`
 
 Exclui o brinquedo do banco pelo id. Retorna `200` com `"Brinquedo deletado com sucesso!"`, ou `404` com `"Brinquedo não encontrado."` se o id não existir.
 
+![DELETE de id inexistente](docs/prints/06-delete-inexistente-404.jpeg)
+
+## Spring Security
+
+Classe `SegurancaConfig`. A API (`/brinquedos/**`) usa HTTP Basic, para testar no Postman, e o site usa a tela de login (`/login`). Existem dois perfis, criados em memória, com senha em BCrypt:
+
+| Usuário | Senha | Perfil | Pode |
+|---|---|---|---|
+| `user` | `user123` | USER | consultar (GET) |
+| `admin` | `admin123` | ADMIN | consultar, criar, atualizar e excluir |
+
+| Rota | Acesso |
+|---|---|
+| `/`, `/login`, `/css/**` | público |
+| `GET /brinquedos/**` | USER ou ADMIN |
+| `POST`, `PUT`, `DELETE /brinquedos/**` | somente ADMIN |
+| `/painel` | usuário logado |
+| `/painel/admin/**` | somente ADMIN |
+
+Sem login a API responde `401`. Logado sem permissão, responde `403`.
+
+## Thymeleaf
+
+Controller `PaginaController` e páginas em `src/main/resources/templates`:
+
+| Página | Rota | Acesso |
+|---|---|---|
+| `index.html` | `/` | público (landing page) |
+| `login.html` | `/login` | público |
+| `painel.html` | `/painel` | logado; o formulário de cadastro e o botão Excluir só aparecem para ADMIN (`sec:authorize`) |
+
+O painel usa o `BrinquedoService` para listar, cadastrar e excluir.
+
+## Testes de segurança (Postman)
+
+Importar `postman/AC4-Brinquedos.postman_collection.json` e rodar a coleção. Cada requisição tem um teste automático do status esperado.
+
+| Requisição | Usuário | Esperado |
+|---|---|---|
+| GET `/brinquedos` | sem login | 401 |
+| GET `/brinquedos` | `admin` com senha errada | 401 |
+| GET `/brinquedos` | `user` | 200 |
+| POST `/brinquedos/criar` | `user` | 403 |
+| PUT `/brinquedos/atualizacao/1` | `user` | 403 |
+| DELETE `/brinquedos/deletar/1` | `user` | 403 |
+| POST `/brinquedos/criar` | `admin` | 200 |
+| GET `/brinquedos` e `/brinquedos/individual/{id}` | `admin` | 200 |
+| PUT `/brinquedos/atualizacao/{id}` | `admin` | 200 |
+| DELETE `/brinquedos/deletar/{id}` | `admin` | 200 |
+| DELETE de id que não existe | `admin` | 404 |
+
+![GET com senha errada](docs/prints/01-get-senha-errada-401.jpeg)
 
 ### Prints Spring Initializr
 <img width="402" height="370" alt="Screenshot 2026-11-05 at 19 46 01" src="https://github.com/user-attachments/assets/3fe6c09a-1f1c-47d6-b75e-52a2600cea3e" />
